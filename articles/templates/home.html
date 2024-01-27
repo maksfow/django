@@ -7,16 +7,17 @@
 <body>
 <h1>Главная страница</h1>
 <hr>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Зарегистрироваться</button>
+<form  action="search" method="POST">
+     {% csrf_token %}
+    <input type="text">
+    <button>Поиск</button>
 </form>
 <hr>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Добавить статью</button>
+<form
+     action="search" method="POST">
+     {% csrf_token %}
+    <input type="text">
+    <button>Добавить статью</button>
 </form>
 <hr>
 
