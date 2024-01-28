@@ -1,20 +1,68 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from . import forms
+from .models import Category,Article
 
 def home(request):
+    #  форма для поиска товаров на сайте
     search_bar = forms.SearchForm()
     upload_form = forms.SearchForm()
-    context = {"search_form": search_bar, "upload_form": upload_form}
-    return render(request,'home.html',context)
+    article_info = Article.objects.all()
+    # Собираем все категории товаров
+    category_info = Category.objects.all()
+    # Отправить элементы на фронт
+    context = {"search_form": search_bar, "upload_form": upload_form, 'article': article_info, 'category': category_info}
+    return render(request, 'home.html', context)
 
-def info(request):
-    if request.method == 'POST':
-        pass
 
-def review(request):
+
+
+def category(request, pk):
+    category = Category.objects.get(id=pk)
+    articles = Article.objects.filter(category_name=category)
+    context = {'articles': articles}
+    return render(request, 'category.html', context)
+
+
+def article(request, pk):
+    article = Article.objects.get(id=pk)
+    context = {'article': article}
+    return render(request, 'article.html', context)
+
+
+
+def search_article(request):
     if request.method == 'POST':
-        pass
-def look(request):
-    return render(request,'look.html')
+        info = request.POST.get('search_article')
+        try:
+            infot = Article.objects.get(title__icontains=info)
+            return redirect(f'article/{infot.id}')
+        except:
+            return redirect('/not-found')
+
+def create(request):
+        if request.method == 'POST':
+            title =  int(request.POST.get('title'))
+            content =  int(request.POST.get('content'))
+            photo =  int(request.POST.get('photo'))
+            category = int(request.POST.get('category'))
+            Article.objects.create(title=title, content=content, photo=photo,
+                                   category_name=category).save()
+
+            return redirect('createarticles.html')
+        else:
+            return render(request, 'home.html')
+
+
+def createarticles(request):
+    return render(request, 'createarticles.html')
+
+
 def about(request):
     return render(request,'about.html')
+def not_found(request):
+    return render(request,'not-found.html')
+def del_from_article(request,pk):
+    article_to_delete = Article.objects.get(id=pk)
+    Article.objects.all(user_id=request.user.id,
+                        title=article_to_delete).delete()
+    return redirect('/article')

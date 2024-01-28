@@ -7,18 +7,44 @@
 <body>
 <h1>Главная страница</h1>
 <hr>
+<a href="/accounts/login/">Войти |</a>
+<a href="/accounts/logout/">Выйти</a>
+<hr>
 <form  action="search" method="POST">
      {% csrf_token %}
-    <input type="text">
+    <input type="text" name="search_article">
     <button>Поиск</button>
 </form>
 <hr>
-<form
-     action="search" method="POST">
-     {% csrf_token %}
-    <input type="text">
-    <button>Добавить статью</button>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="title">Заголовок статьи:</label><br>
+    <input type="text" name="title"><br>
+    <label for="content">Статья:</label><br>
+    <textarea name="content"></textarea><br>
+    <label for="photo">Фото:</label><br>
+    <input type="file" name="photo"><br>
+
+    <label for="title">Категория:</label><br>
+    <input type="text" name="category_name"><br>
+    <button type="submit">Создать статью</button>
 </form>
+
+
+
+
+<hr>
+<hr>
+Категории:<br>
+{% for i in category %}
+<a href="/category/{{ i.id }}">{{ i.name }}</a><br>
+{% endfor%}
+<hr>
+Статьи:<br>
+{% for i in article %}
+<a href="/article/{{ i.id }}">{{ i.title }}</a><br>
+{% endfor %}
 <hr>
 
 <a href="/about">О нас</a>
