@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from . import forms
 from .models import Category,Article
+from .forms import SearchForm,ArticlesForm
 
 def home(request):
     #  форма для поиска товаров на сайте
@@ -39,22 +40,23 @@ def search_article(request):
         except:
             return redirect('/not-found')
 
-def create(request):
-        if request.method == 'POST':
-            title =  int(request.POST.get('title'))
-            content =  int(request.POST.get('content'))
-            photo =  int(request.POST.get('photo'))
-            category = int(request.POST.get('category'))
-            Article.objects.create(title=title, content=content, photo=photo,
-                                   category_name=category).save()
 
-            return redirect('createarticles.html')
-        else:
-            return render(request, 'home.html')
+
+
 
 
 def createarticles(request):
-    return render(request, 'createarticles.html')
+    if request.method == 'POST':
+        form = ArticlesForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = ArticlesForm()
+    return render(request, 'createarticles.html', {'form': form})
+
+
+
 
 
 def about(request):
