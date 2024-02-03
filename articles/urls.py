@@ -9,6 +9,7 @@ urlpatterns = [
     path('createarticles',views.createarticles),
     path('not-found',views.not_found),
     path('del-item/<int:pk>', views.del_from_article),
+    path('register', views.Register.as_view())
 
 
 ]

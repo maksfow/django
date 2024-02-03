@@ -2,16 +2,18 @@ from django.shortcuts import render,redirect
 from . import forms
 from .models import Category,Article
 from .forms import SearchForm,ArticlesForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm
+from django.views import View
 
 def home(request):
     #  форма для поиска товаров на сайте
     search_bar = forms.SearchForm()
-    upload_form = forms.SearchForm()
     article_info = Article.objects.all()
     # Собираем все категории товаров
     category_info = Category.objects.all()
     # Отправить элементы на фронт
-    context = {"search_form": search_bar, "upload_form": upload_form, 'article': article_info, 'category': category_info}
+    context = {"form": search_bar,  'article': article_info, 'category': category_info}
     return render(request, 'home.html', context)
 
 
@@ -68,3 +70,24 @@ def del_from_article(request,pk):
     Article.objects.all(user_id=request.user.id,
                         title=article_to_delete).delete()
     return redirect('/article')
+class Register(View):
+    template_name = 'registration/register.html'
+
+    # Отправка формы регистрации
+    def get(self, request):
+        context = {'form': UserCreationForm}
+        return render(request, self.template_name, context)
+
+    # Добавление в БД
+    def post(self, request):
+        form = UserCreationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('/')
+        context = {'form': UserCreationForm}
+        return render(request, self.template_name, context)
